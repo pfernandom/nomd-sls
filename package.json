@@ -1,0 +1,45 @@
+{
+  "name": "taco-gallery",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "install:offline": "docker pull lambci/lambda",
+    "test": "mocha handler.test --compilers js:babel-core/register",
+    "setup": "./node_modules/.bin/sls config credentials --provider aws --key KEY --secret SECRET",
+    "start": "./node_modules/.bin/sls offline start -r us-east-1 --noTimeout --corsDisallowCredentials false",
+    "install:dynamodb": "./node_modules/.bin/sls dynamodb install",
+    "start:dynamodb": "./node_modules/.bin/sls dynamodb start -p 8000  --migrate true",
+    "deploy": "./node_modules/.bin/sls deploy --verbose"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babel": "^6.23.0",
+    "babel-core": "^6.23.1",
+    "babel-preset-es2015": "^6.22.0",
+    "jsonschema": "^1.1.1",
+    "serverless-dynamodb-client": "0.0.2",
+    "uuid": "^3.0.1",
+    "auth0": "^2.5.0",
+    "bluebird": "^3.4.6",
+    "dotenv": "^2.0.0"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.20.0",
+    "babel-core": "^6.24.0",
+    "babel-loader": "^6.4.1",
+    "babel-preset-es2015": "^6.24.0",
+    "babel-preset-stage-2": "^6.22.0",
+    "chai": "^3.5.0",
+    "dynalite": "^1.1.1",
+    "json-loader": "^0.5.4",
+    "jsonschema": "^1.1.1",
+    "mocha": "^3.2.0",
+    "serverless-dynamodb-local": "^0.2.19",
+    "serverless-offline": "^3.10.2",
+    "serverless-plugin-simulate": "0.0.10",
+    "serverless-webpack": "^1.0.0-rc.4",
+    "webpack-node-externals": "^1.5.4"
+  }
+}
