@@ -13,7 +13,7 @@ provider:
 
 resources:
   Resources:
-    TacosDB:
+    patients:
       Type: 'AWS::DynamoDB::Table'
       Properties:
         AttributeDefinitions:
@@ -33,34 +33,41 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        TableName: MyTable
+        TableName: Patients
 
 functions:
   authorizerFunc:
       handler: src/handlers/auth.auth
   helloPublic:
-    handler: src/handlers/handler.hello
+    handler: src/handlers/handler.init
     events:
       - http:
-          path: helloPublic
+          path: init
           method: get
           cors: true
-  helloIAM:
-      handler: src/handlers/handler.hello
-      events:
-        - http:
-            path: helloIAM
-            method: get
-            cors: true
-            authorizer: authorizerFunc
-  helloAuth0:
-      handler: src/handlers/handler.hello
-      events:
-        - http:
-            path: helloAuth0
-            method: get
-            cors: true
-            authorizer: authorizerFunc
+  graphqlUI:
+    handler: src/handlers/lambda.handler
+    events:
+      - http:
+          path: graphql
+          method: get
+          cors: true
+  graphql:
+    handler: src/handlers/lambda.handler
+    events:
+      - http:
+          path: graphql
+          method: post
+          cors: true
+  graphqlsecure:
+    handler: src/handlers/lambda.handler
+    events:
+      - http:
+          path: graphqlsecure
+          method: post
+          cors: true
+          authorizer: authorizerFunc
+
 
 plugins:
   - serverless-dynamodb-local
@@ -74,5 +81,6 @@ custom:
       start:
         migrate: true
   serverless-offline:
+    port: 3333
     babelOptions:
       presets: ["es2015", "stage-2"]

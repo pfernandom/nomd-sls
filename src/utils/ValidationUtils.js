@@ -8,15 +8,15 @@ class ValidationUtils{
 		this.v = new Validator();
 
 		const schema = {
-			"id": "/MyRecord",
+			"id": "/Patient",
 			"type": "object",
 			"properties": {
 				"name": {"type": "string"},
 				"description": {"type": "string"}
 			},
 			"required": ["name"],
-			"additionalProperties": false
-		}
+			"additionalProperties": true
+		};
 
 		this.v.addSchema(schema, '/Taco');
 	}
@@ -26,8 +26,7 @@ class ValidationUtils{
 		return new Promise((resolve, reject) => {
 			var validation = this.v.validate(object, schema);
 			if(validation.errors.length > 0){
-				console.log(validation);
-				reject(validation.errors)
+				reject(validation.errors);
 			}
 			else{
 				resolve();

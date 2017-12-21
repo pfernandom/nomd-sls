@@ -4,16 +4,22 @@
 
 import dynalite from 'dynalite';
 import AWS from 'aws-sdk';
+import dotenv from 'dotenv';
+dotenv.config();
 
-var dynaliteServer = dynalite({createTableMs: 50});
+AWS.config.update({
+	region: "us-east-2",
+	endpoint: "http://localhost:4567"
+});
 
 module.exports.mockDB = () => {
-	AWS.config.update({
-		region: "us-west-2",
-		endpoint: "http://localhost:4567"
-	});
+	console.log("Starting mock DB")
+
+	var dynaliteServer = dynalite({createTableMs: 50});
 
 	var dynamodb = new AWS.DynamoDB();
+
+	const tableName = "Patients"
 
 	return new Promise((resolve, reject) => {
 		dynaliteServer.listen(4567, function(err) {
@@ -21,8 +27,9 @@ module.exports.mockDB = () => {
 				if (err) console.log(err, err.stack); // an error occurred
 				else {
 					if(data.TableNames.length <= 0){
+						console.log("Creating tables...")
 						dynamodb.createTable({
-								TableName : "TacoGallery",
+								TableName : tableName,
 								KeySchema: [
 									{ AttributeName: "id", KeyType: "HASH"},  //Partition key
 									{ AttributeName: "name", KeyType: "RANGE" }  //Sort key
@@ -40,9 +47,18 @@ module.exports.mockDB = () => {
 									console.error("Unable to create table. Error JSON:", JSON.stringify(err, null, 2));
 									reject(err);
 								} else {
-									setTimeout(()=>{
-										resolve(data);
-									},1000)
+									var params = {
+									  TableName: tableName /* required */
+									};
+									dynamodb.waitFor('tableExists', params, function(err, data) {
+									  if (err){
+											console.log(err, err.stack);
+										}  // an error occurred
+									  else{
+											resolve(data);
+										};           // successful response
+									});
+
 								}
 							});
 					}
