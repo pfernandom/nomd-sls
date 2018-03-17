@@ -7,14 +7,19 @@ const awsServerlessExpressMiddleware = require('aws-serverless-express/middlewar
 const app = express();
 
 app.use(awsServerlessExpressMiddleware.eventContext());
-app.use( body_parser.json({ limit: '50mb' }) );
+app.use(body_parser.json({ limit: '50mb' }));
 
-app.use('/', expressGraphQL( () => {
-		return {
-			graphiql: true,
-			schema: GraphQLSchema.default,
-		};
-	})
+app.use(function logErrors(err, req, res, next) {
+	console.error('Errors:', err.stack);
+	next(err);
+});
+
+app.use('/', expressGraphQL(() => {
+	return {
+		graphiql: true,
+		schema: GraphQLSchema.default,
+	};
+})
 );
 
 module.exports = app;

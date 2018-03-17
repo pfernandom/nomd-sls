@@ -1,144 +1,60 @@
 import { makeExecutableSchema } from 'graphql-tools';
-import PatientResolver from './resolvers/Patient';
-import DoctorResolver from './resolvers/Doctor';
+import ArticleResolver from './resolvers/Article';
+import UserResolver from './resolvers/User';
 
-import EmailType from './scalars/Email'
-import DateType from './scalars/Date'
+import EmailType from './scalars/Email';
+import DateType from './scalars/Date';
 
+import userTypeDefs from 'graphql/typeDefs/userTypeDefs';
+import nomdTypeDefs from 'graphql/typeDefs/nomdTypeDefs';
 
-const typeDefs = `
-  scalar Date
-  scalar Email
-
-  enum Gender{
-    MALE
-    FEMALE
-  }
-
-  enum MaritalStatus{
-    MARRIED
-    SINGLE
-  }
-
-  type Address{
-    street1: String
-    street2: String
-    city: String
-    country: String
-    zip: String
-  }
-
-  input AddressInput{
-    street1: String!
-    street2: String
-    city: String!
-    country: String!
-    zip: String!
-  }
-
-  type Doctor{
-    id: ID!
-    name: String!
-    specialty: String
-    clinic: String
-    patients: [Patient]
-  }
-
-  type Patient{
-    id: ID
-    name: String
-    gender: Gender
-    dob: Date
-    birthPlace: String
-    address: Address
-    email: Email
-    job: String
-    maritalStatus: MaritalStatus
-    schollarship: String
-    restrictions: [String]
-    bloodType: String
-    insurance: String
-    doctors: [Doctor]
-  }
-
-  input NewPatientInput{
-    id: ID
-    name: String
-    gender: Gender
-    dob: Date
-    birthPlace: String
-    address: AddressInput
-    email: Email
-    job: String
-    maritalStatus: MaritalStatus
-    schollarship: String
-    restrictions: [String]
-    bloodType: String
-    insurance: String
-    doctorId: String
-  }
-
-  input EditPatientInput{
-    id: ID!
-    name: String!
-    gender: Gender
-    dob: Date
-    birthPlace: String
-    address: AddressInput
-    email: Email
-    job: String
-    maritalStatus: MaritalStatus
-    schollarship: String
-    restrictions: [String]
-    bloodType: String
-    insurance: String
-  }
-
-  input NewRegistration{
-    doctorId: String!
-    code: String!
-  }
-
-  type NewPatientOutput{
-    patient: Patient
-  }
-
-  # this schema allows the following mutation:
+const mutationsAndQueries = `
   type Mutation {
-    createPatient (
-      patient: NewPatientInput!
-    ): NewPatientOutput
-    editPatient (
-      patient: EditPatientInput!
-    ): NewPatientOutput
-    registerDoctor(doctorId:String!, code:String!):Boolean
+    createArticle (
+      article: NewArticleInput!
+    ): NewArticleOutput
+    authenticate(user:NewUser):UserProfile
   }
 
   type Query {
-    patients(name: String): [Patient]
-    patient(id: String): Patient
-    doctors: [Doctor]
-    isRegistered(id:String!): Boolean
+    articles(locale: String): [Article]
+    article(id: String): Article
   }
 `;
 
+const typeDefs = [
+	userTypeDefs,
+	nomdTypeDefs,
+	mutationsAndQueries,
+];
+
 const resolvers = {
-  Email: EmailType,
-  Date: DateType,
-  Query: {
-    patients: (parent, args, context, info)=> PatientResolver.index(args),
-    patient: (parent, args, context, info)=> PatientResolver.index(args),
-    doctors: (parent, args, context, info)=> DoctorResolver.index(args),
-    isRegistered: (parent, args, context, info)=> DoctorResolver.isRegistered(args),
-  },
-  Mutation: {
-    createPatient: (_, { patient }) => PatientResolver.create(patient),
-    editPatient: (_, { patient }) => PatientResolver.update(patient),
-    registerDoctor: (parent, args, context, info)=> DoctorResolver.register(args),
-  },
+	Email: EmailType,
+	Date: DateType,
+	Query: {
+		articles: (
+			parent,
+			args,
+			context,
+			info
+		) => ArticleResolver.index(args),
+		article: (
+			parent,
+			args,
+			context,
+			info
+		) => ArticleResolver.getById(args),
+	},
+	Mutation: {
+		createArticle: (
+			_,
+			{ article }
+		) => ArticleResolver.create(article),
+		authenticate: (parent, args) => UserResolver.authenticate(args),
+	},
 };
 
 export default makeExecutableSchema({
-  typeDefs,
-  resolvers,
+	typeDefs,
+	resolvers,
 });

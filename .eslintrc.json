@@ -1,0 +1,15 @@
+{
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "extends": "strongloop",
+  "rules": {
+    "no-mixed-spaces-and-tabs": 2,
+    "indent": ["error", "tab"],
+    "max-len": ["error", { "ignoreComments": true }]
+  },
+  "parserOptions": {
+      "sourceType": "module"
+  }
+}

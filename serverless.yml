@@ -1,4 +1,4 @@
-service: taco-gallery
+service: nomd
 
 provider:
   name: aws
@@ -6,34 +6,10 @@ provider:
   region: us-east-2
   stage: dev
   environment:
-    TESTNUM: 27
-    TESTSTR: hello
-    AUTH0_DOMAIN: pfernandom.auth0.com
-    AUTH0_CLIENTID: L7YiTnpuzmfa1W9spj7fIpwXgHKzSmNX
+    AUTH0_DOMAIN: ${env:AUTH0_DOMAIN}
+    AUTH0_CLIENTID: ${env:AUTH0_CLIENTID}
 
-resources:
-  Resources:
-    patients:
-      Type: 'AWS::DynamoDB::Table'
-      Properties:
-        AttributeDefinitions:
-          -
-            AttributeName: id
-            AttributeType: S
-          -
-            AttributeName: name
-            AttributeType: S
-        KeySchema:
-          -
-            AttributeName: id
-            KeyType: HASH
-          -
-            AttributeName: name
-            KeyType: RANGE
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: Patients
+resources: ${file(./resources.yml)}
 
 functions:
   authorizerFunc:

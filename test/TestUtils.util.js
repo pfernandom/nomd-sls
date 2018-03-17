@@ -8,65 +8,64 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 AWS.config.update({
-	region: "us-east-2",
-	endpoint: "http://localhost:4567"
+	region: 'us-east-2',
+	endpoint: 'http://localhost:4567',
 });
 
 module.exports.mockDB = () => {
-	console.log("Starting mock DB")
+	console.log('Starting mock DB');
 
 	var dynaliteServer = dynalite({createTableMs: 50});
 
 	var dynamodb = new AWS.DynamoDB();
 
-	const tableName = "Patients"
+	const tableName = 'Patients';
 
 	return new Promise((resolve, reject) => {
 		dynaliteServer.listen(4567, function(err) {
-			dynamodb.listTables({},function(err, data) {
+			dynamodb.listTables({}, function(err, data) {
 				if (err) console.log(err, err.stack); // an error occurred
 				else {
-					if(data.TableNames.length <= 0){
-						console.log("Creating tables...")
+					if (data.TableNames.length <= 0){
+						console.log('Creating tables...');
 						dynamodb.createTable({
-								TableName : tableName,
-								KeySchema: [
-									{ AttributeName: "id", KeyType: "HASH"},  //Partition key
-									{ AttributeName: "name", KeyType: "RANGE" }  //Sort key
-								],
-								AttributeDefinitions: [
-									{ AttributeName: "id", AttributeType: "S" },
-									{ AttributeName: "name", AttributeType: "S" }
-								],
-								ProvisionedThroughput: {
-									ReadCapacityUnits: 10,
-									WriteCapacityUnits: 10
-								}},
-							function(err, data) {
-								if (err) {
-									console.error("Unable to create table. Error JSON:", JSON.stringify(err, null, 2));
-									reject(err);
-								} else {
-									var params = {
-									  TableName: tableName /* required */
-									};
-									dynamodb.waitFor('tableExists', params, function(err, data) {
+							TableName: tableName,
+							KeySchema: [
+								{ AttributeName: 'id', KeyType: 'HASH'}, // Partition key
+								{ AttributeName: 'name', KeyType: 'RANGE' }, // Sort key
+							],
+							AttributeDefinitions: [
+								{ AttributeName: 'id', AttributeType: 'S' },
+								{ AttributeName: 'name', AttributeType: 'S' },
+							],
+							ProvisionedThroughput: {
+								ReadCapacityUnits: 10,
+								WriteCapacityUnits: 10,
+							}},
+						function(err, data) {
+							if (err) {
+								console.error('Unable to create table. Error JSON:', JSON.stringify(err, null, 2));
+								reject(err);
+							} else {
+								var params = {
+									  TableName: tableName, /* required */
+								};
+								dynamodb.waitFor('tableExists', params, function(err, data) {
 									  if (err){
-											console.log(err, err.stack);
-										}  // an error occurred
-									  else{
-											resolve(data);
-										};           // successful response
-									});
+										console.log(err, err.stack);
+									} // an error occurred
+									  else {
+										resolve(data);
+									}; // successful response
+								});
 
-								}
-							});
-					}
-					else{
+							}
+						});
+					} else {
 						resolve();
 					}
 				}
 			});
 		});
 	});
-}
+};

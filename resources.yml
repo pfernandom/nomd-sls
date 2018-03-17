@@ -1,0 +1,64 @@
+Resources:
+  users:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      AttributeDefinitions:
+        -
+          AttributeName: sub
+          AttributeType: S
+        -
+          AttributeName: name
+          AttributeType: S
+      KeySchema:
+        -
+          AttributeName: sub
+          KeyType: HASH
+        -
+          AttributeName: name
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      TableName: Users
+  tokens:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      AttributeDefinitions:
+        -
+          AttributeName: id
+          AttributeType: S
+        -
+          AttributeName: generatedOn
+          AttributeType: N
+      KeySchema:
+        -
+          AttributeName: id
+          KeyType: HASH
+        -
+          AttributeName: generatedOn
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      TableName: Tokens
+  articles:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      AttributeDefinitions:
+        -
+          AttributeName: id
+          AttributeType: S
+        -
+          AttributeName: locale
+          AttributeType: S
+      KeySchema:
+        -
+          AttributeName: id
+          KeyType: HASH
+        -
+          AttributeName: locale
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      TableName: Articles

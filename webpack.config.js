@@ -1,4 +1,4 @@
-var nodeExternals = require('webpack-node-externals')
+var nodeExternals = require('webpack-node-externals');
 
 module.exports = {
 	entry: './handler.js',
@@ -14,12 +14,12 @@ module.exports = {
 			{
 				test: /\.jsx?$/,
 				exclude: /node_modules/,
-				loaders: ["babel-loader"]
+				loaders: ['babel-loader'],
 			},
 			{
 				test: /\.json$/,
-				loader: 'json-loader'
-			}
-		]
-	}
+				loader: 'json-loader',
+			},
+		],
+	},
 };
