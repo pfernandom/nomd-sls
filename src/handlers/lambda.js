@@ -1,15 +1,20 @@
+const GraphQLSchema = require('../graphql/schemaDef').default;
+const server = require('apollo-server-lambda');
 
+console.log('GraphQLSchema', GraphQLSchema);
 
-const awsServerlessExpress = require('aws-serverless-express');
-const app = require('../app');
-
-const server = awsServerlessExpress.createServer(app);
-
-exports.handler = (event, context, callback) => {
-	context.succeed = (response) => {
-		server.close();
-		callback(null, response);
+exports.graphqlHandler = function graphqlHandler(event, context, callback) {
+	const callbackFilter = function callbackFilter(error, output) {
+		output.headers['Access-Control-Allow-Origin'] = '*';
+		callback(error, output);
 	};
-	return awsServerlessExpress.proxy(server, event, context);
+	const handler = server.graphqlLambda({
+		schema: GraphQLSchema,
+		tracing: true,
+	});
 
+	return handler(event, context, callbackFilter);
 };
+
+
+exports.graphiqlHandler = server.graphiqlLambda({ endpointURL: '/graphql' });

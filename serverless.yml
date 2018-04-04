@@ -22,21 +22,21 @@ functions:
           method: get
           cors: true
   graphqlUI:
-    handler: src/handlers/lambda.handler
+    handler: src/handlers/lambda.graphiqlHandler
     events:
       - http:
           path: graphql
           method: get
           cors: true
   graphql:
-    handler: src/handlers/lambda.handler
+    handler: src/handlers/lambda.graphqlHandler
     events:
       - http:
           path: graphql
           method: post
           cors: true
   graphqlsecure:
-    handler: src/handlers/lambda.handler
+    handler: src/handlers/lambda.graphqlHandler
     events:
       - http:
           path: graphqlsecure
