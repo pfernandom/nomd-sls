@@ -1,4 +1,7 @@
-import { makeExecutableSchema } from 'graphql-tools';
+import {
+	makeExecutableSchema,
+	addMockFunctionsToSchema,
+} from 'graphql-tools';
 import ArticleResolver from './resolvers/Article';
 import UserResolver from './resolvers/User';
 
@@ -7,6 +10,8 @@ import DateType from './scalars/Date';
 
 import userTypeDefs from 'graphql/typeDefs/userTypeDefs';
 import nomdTypeDefs from 'graphql/typeDefs/nomdTypeDefs';
+
+import mocks from 'graphql/mock/schemaMocks'
 
 const mutationsAndQueries = `
   type Mutation {
@@ -17,8 +22,9 @@ const mutationsAndQueries = `
   }
 
   type Query {
-    articles(locale: String): [Article]
+    articles(locale: String, query: ArticleQuery): [Article]
     article(id: String): Article
+    comment(id: String): Comment
   }
 `;
 
@@ -54,7 +60,13 @@ const resolvers = {
 	},
 };
 
-export default makeExecutableSchema({
+const schema = makeExecutableSchema({
 	typeDefs,
 	resolvers,
 });
+
+
+// Add mocks, modifies schema in place
+addMockFunctionsToSchema({ schema, mocks, preserveResolvers: false });
+
+export default schema;
